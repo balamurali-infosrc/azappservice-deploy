@@ -57,7 +57,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore & Build
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/appServiceSlot/SlotDemo/SlotDemo.csproj'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/appServiceSlot/SlotDemo'
         run: |
          dotnet restore
          dotnet publish -c Release -o ../publish
