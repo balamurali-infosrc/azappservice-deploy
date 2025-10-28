@@ -56,11 +56,18 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Restore & Build
-        working-directory: terraform/appServiceSlot/SlotDemo/SlotDemo.csproj
-        run: |
-         dotnet restore
-         dotnet publish -c Release -o ../publish
+      # - name: Restore & Build
+      #   working-directory: terraform/appServiceSlot/SlotDemo/SlotDemo.csproj
+      #   run: |
+      #    dotnet restore
+      #    dotnet publish -c Release -o ../publish
+      - task: DotNetCoreCLI@2
+        displayName: 'Build Project'
+        inputs:
+        command: 'build'
+        projects: '**/*.csproj'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/appServiceSlot/SlotDemo/SlotDemo'
+
 
 
       - name: Zip output
