@@ -20,21 +20,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: "1.8.5"
 
-
       - name: Azure Login
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          auth-type: service_principal
+           client-id: ${{ secrets.AZURE_CLIENT_ID }}
+           client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+           auth-type: service_principal
+
       - name: Terraform Init
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform init
@@ -44,7 +43,6 @@ jobs:
         run: terraform apply -auto-approve
 
       - name: Get Terraform Outputs
-        id: tf-output
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
           echo "WEBAPP_NAME=$(terraform output -raw webapp_name)" >> $GITHUB_ENV
@@ -56,33 +54,27 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-
-      - name: Restore & Build
+      - name: Publish .NET app
         run: |
           dotnet restore
           dotnet publish -c Release -o publish
 
-
-      - name: Zip publish folder
+      - name: Zip output
         run: |
           cd publish
           zip -r ../tf-sample-bg-master.zip .
           cd ..
 
-
-      - name: Deploy to Slot using ZIP Deploy
+      - name: Deploy ZIP to Slot
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.WEBAPP_NAME }}
           slot-name: ${{ env.WEBAPP_SLOT }}
           package: tf-sample-bg-master.zip
 
-
       - name: Smoke Test
         run: |
-          URL="https://${{ env.WEBAPP_NAME }}-${{ env.WEBAPP_SLOT }}.azurewebsites.net"
-          curl -fS $URL || exit 1
-
+          curl -fS https://${{ env.WEBAPP_NAME }}-${{ env.WEBAPP_SLOT }}.azurewebsites.net || exit 1
 
       - name: Swap Slots
         run: |
