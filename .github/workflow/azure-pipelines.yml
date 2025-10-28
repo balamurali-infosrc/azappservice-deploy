@@ -1,0 +1,93 @@
+name: Terraform + .NET ZIP Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  TF_WORKING_DIR: ./terraform
+  DOTNET_VERSION: "8.0.x"
+
+jobs:
+  terraform-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.8.5"
+
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          auth-type: service_principal
+      - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform apply -auto-approve
+
+      - name: Get Terraform Outputs
+        id: tf-output
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+          echo "WEBAPP_NAME=$(terraform output -raw webapp_name)" >> $GITHUB_ENV
+          echo "WEBAPP_SLOT=$(terraform output -raw slot_name)" >> $GITHUB_ENV
+          echo "WEBAPP_RG=$(terraform output -raw resource_group_name)" >> $GITHUB_ENV
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+
+      - name: Restore & Build
+        run: |
+          dotnet restore
+          dotnet publish -c Release -o publish
+
+
+      - name: Zip publish folder
+        run: |
+          cd publish
+          zip -r ../tf-sample-bg-master.zip .
+          cd ..
+
+
+      - name: Deploy to Slot using ZIP Deploy
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.WEBAPP_NAME }}
+          slot-name: ${{ env.WEBAPP_SLOT }}
+          package: tf-sample-bg-master.zip
+
+
+      - name: Smoke Test
+        run: |
+          URL="https://${{ env.WEBAPP_NAME }}-${{ env.WEBAPP_SLOT }}.azurewebsites.net"
+          curl -fS $URL || exit 1
+
+
+      - name: Swap Slots
+        run: |
+          az webapp deployment slot swap \
+          --resource-group ${{ env.WEBAPP_RG }} \
+          --name ${{ env.WEBAPP_NAME }} \
+          --slot ${{ env.WEBAPP_SLOT }} \
+          --target-slot production
