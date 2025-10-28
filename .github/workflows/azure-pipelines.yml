@@ -56,15 +56,17 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Publish .NET app
+      - name: Restore & Build
+        working-directory: ./src
         run: |
-          dotnet restore
-          dotnet publish -c Release -o publish
+         dotnet restore
+         dotnet publish -c Release -o ../publish
+
 
       - name: Zip output
         run: |
           cd publish
-          zip -r ../tf-sample-bg-master.zip .
+          zip -r ../appServiceSlot.zip .
           cd ..
 
       - name: Deploy ZIP to Slot
@@ -72,7 +74,7 @@ jobs:
         with:
           app-name: ${{ env.WEBAPP_NAME }}
           slot-name: ${{ env.WEBAPP_SLOT }}
-          package: tf-sample-bg-master.zip
+          package: appServiceSlot.zip
 
       - name: Smoke Test
         run: |
