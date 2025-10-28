@@ -43,11 +43,13 @@ jobs:
         run: terraform apply -auto-approve
 
       - name: Get Terraform Outputs
+        id: tf-output
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          echo "WEBAPP_NAME=$(terraform output -raw webapp_name)" >> $GITHUB_ENV
-          echo "WEBAPP_SLOT=$(terraform output -raw slot_name)" >> $GITHUB_ENV
-          echo "WEBAPP_RG=$(terraform output -raw resource_group_name)" >> $GITHUB_ENV
+          echo "WEBAPP_NAME=$(terraform output -raw webapp_name | tr -d '\r\n')" >> $GITHUB_ENV
+          echo "WEBAPP_SLOT=$(terraform output -raw slot_name | tr -d '\r\n')" >> $GITHUB_ENV
+          echo "WEBAPP_RG=$(terraform output -raw resource_group_name | tr -d '\r\n')" >> $GITHUB_ENV
+
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
