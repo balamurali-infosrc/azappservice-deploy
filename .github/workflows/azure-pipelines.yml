@@ -57,7 +57,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore & Build
-        working-directory: ${{ env.TF_WORKING_DIR }}
+        working-directory: ./src/terraform\appServiceSlot\SlotDemo.csproj
         run: |
          dotnet restore
          dotnet publish -c Release -o ../publish
@@ -66,7 +66,7 @@ jobs:
       - name: Zip output
         run: |
           cd publish
-          zip -r ../appServiceSlot.zip
+          zip -r ../SlotDemo.csproj
           cd ..
 
       - name: Deploy ZIP to Slot
