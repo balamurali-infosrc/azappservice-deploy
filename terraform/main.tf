@@ -54,10 +54,10 @@ resource "azurerm_linux_web_app_slot" "staging" {
 }
 
 
-# 5️⃣ Source Control Configuration
-resource "azurerm_app_service_source_control_slot" "sourcecontrol" {
- slot_id        = azurerm_linux_web_app_slot.staging.id
-  repo_url      = var.repo_url
-  branch        = var.branch
-  use_mercurial = false 
-}
+# # 5️⃣ Source Control Configuration
+# resource "azurerm_app_service_source_control_slot" "sourcecontrol" {
+#  slot_id        = azurerm_linux_web_app_slot.staging.id
+#   repo_url      = var.repo_url
+#   branch        = var.branch
+#   use_mercurial = false 
+# }
