@@ -56,11 +56,14 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+        env:
+        PROJECT_PATH: ./terraform/appServiceSlot/SlotDemo
+
       - name: Restore & Build
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/appServiceSlot/SlotDemo'
+        working-directory: ${{ env.PROJECT_PATH }}
         run: |
          dotnet restore
-         dotnet publish -c Release -o ../publish
+         dotnet publish -c Release -o ../../publish
 
 
       - name: Zip output
