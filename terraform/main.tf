@@ -23,7 +23,7 @@ resource "azurerm_linux_web_app" "webapp" {
   site_config {
     application_stack {
     #   dotnet_version = "v8.0" # Or "v6.0" depending on your app
-     dotnet_version = "6.0"
+     dotnet_version = "8.0"
     }
   }
 
@@ -42,7 +42,7 @@ resource "azurerm_linux_web_app_slot" "staging" {
   site_config {
     application_stack {
     #   dotnet_version = "v8.0" # Or "v6.0" depending on your app
-       dotnet_version = "6.0"
+       dotnet_version = "8.0"
     }
   }
 

@@ -10,7 +10,7 @@ permissions:
 
 env:
   TF_WORKING_DIR: ./terraform
-  DOTNET_VERSION: "6.0.x"
+  DOTNET_VERSION: "8.0.6"
   PROJECT_PATH: terraform/appServiceSlot/appServiceSlot/appServiceSlot/SlotDemo
   PROJECT_FILE: SlotDemo.csproj
 jobs:
