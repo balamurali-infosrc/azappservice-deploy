@@ -75,10 +75,18 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Check folder structure
+        run: |
+         echo "Current directory:"
+         pwd
+         echo "Files:"
+         ls -R
 
       - name: Restore & Build
         working-directory: ${{ env.PROJECT_PATH }}
         run: |
+         PROJECT_FILE=$(find . -name "*.csproj" | head -n 1)
+         echo "Using project: $PROJECT_FILE"
          dotnet restore ${{ env.PROJECT_FILE }}
          dotnet publish ${{ env.PROJECT_FILE }} -c Release -o ../../publish
 
