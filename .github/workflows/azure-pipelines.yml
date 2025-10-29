@@ -92,13 +92,19 @@ jobs:
          dotnet restore "$PROJECT_FILE"
          dotnet publish "$PROJECT_FILE" -c Release -o ../../publish
 
-
-
-      - name: Zip output
+      - name: Create ZIP package
+        working-directory: ${{ env.PROJECT_PATH }}
         run: |
-          cd publish
-          zip -r ../appServiceSlot.zip
-          cd ..
+         cd publish
+         zip -r ../appServiceSlot.zip .
+         cd ..
+
+
+      # - name: Zip output
+      #   run: |
+      #     cd publish
+      #     zip -r ../appServiceSlot.zip
+      #     cd ..
 
       - name: Deploy ZIP to Slot
         uses: azure/webapps-deploy@v3
