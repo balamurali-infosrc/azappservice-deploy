@@ -128,7 +128,7 @@ jobs:
       #     app-name: ${{ env.WEBAPP_NAME }}
       #     slot-name: ${{ env.WEBAPP_SLOT }}
       #     package: appServiceSlot.zip
-      
+
       - name: Deploy to Azure App Service Slot
         uses: azure/webapps-deploy@v3
         with:
