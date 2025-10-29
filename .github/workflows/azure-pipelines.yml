@@ -128,13 +128,14 @@ jobs:
       #     app-name: ${{ env.WEBAPP_NAME }}
       #     slot-name: ${{ env.WEBAPP_SLOT }}
       #     package: appServiceSlot.zip
+      
       - name: Deploy to Azure App Service Slot
         uses: azure/webapps-deploy@v3
         with:
-        app-name: ${{ env.WEBAPP_NAME }}
-        slot-name: ${{ env.WEBAPP_SLOT }}
-        resource-group-name: ${{ env.WEBAPP_RG }}
-        package: appServiceSlot.zip
+           app-name: ${{ env.WEBAPP_NAME }}
+           slot-name: ${{ env.WEBAPP_SLOT }}
+           resource-group-name: ${{ env.WEBAPP_RG }}
+           package: appServiceSlot.zip
 
 
       - name: Smoke Test
