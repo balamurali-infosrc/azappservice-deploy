@@ -140,13 +140,15 @@ jobs:
          zip -r appServiceSlot.zip publish
          mv appServiceSlot.zip ${{ github.workspace }}/
 
+
       - name: Deploy to Azure App Service Slot
         uses: azure/webapps-deploy@v3
         with:
-          webapp_name: ${{ env.WEBAPP_NAME }}
+          app-name: ${{ env.WEBAPP_NAME }}
           slot-name: ${{ env.WEBAPP_SLOT }}
-          resource_group_name: ${{ env.WEBAPP_RG }}
+          resource-group-name: ${{ env.WEBAPP_RG }}
           package: appServiceSlot.zip
+
 
 
       - name: Smoke Test
