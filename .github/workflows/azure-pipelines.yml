@@ -53,12 +53,12 @@ jobs:
          WEBAPP_RG=$(terraform output -raw resource_group_name | tr -d '\r\n')
 
          echo "WEBAPP_NAME=$app_service_name" >> $GITHUB_ENV
-         echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
-         echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
+         echo "WEBAPP_SLOT=$slot_name" >> $GITHUB_ENV
+         echo "WEBAPP_RG=$resource_group_name" >> $GITHUB_ENV
 
          echo "Web App Name: $app_service_name"
-         echo "Slot Name: $WEBAPP_SLOT"
-         echo "Resource Group: $WEBAPP_RG"
+         echo "Slot Name: $slot_name"
+         echo "Resource Group: $resource_group_name"
 
       # - name: Get Terraform Outputs
       #   id: tf-output
@@ -91,8 +91,8 @@ jobs:
       - name: Deploy ZIP to Slot
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ env.WEBAPP_NAME }}
-          slot-name: ${{ env.WEBAPP_SLOT }}
+          app-name: ${{ env.app_service_name }}
+          slot-name: ${{ env.slot_name }}
           package: appServiceSlot.zip
 
       - name: Smoke Test
