@@ -82,13 +82,14 @@ jobs:
          echo "Files:"
          ls -R
 
-      - name: Restore & Build
+      - name: Restore & Build .NET App
         working-directory: ${{ env.PROJECT_PATH }}
         run: |
          PROJECT_FILE=$(find . -name "*.csproj" | head -n 1)
-         echo "Using project: $PROJECT_FILE"
-         dotnet restore ${{ env.PROJECT_FILE }}
-         dotnet publish ${{ env.PROJECT_FILE }} -c Release -o ../../publish
+         echo "✅ Using project file: $PROJECT_FILE"
+    
+         dotnet restore "$PROJECT_FILE"
+         dotnet publish "$PROJECT_FILE" -c Release -o ../../publish
 
 
 
