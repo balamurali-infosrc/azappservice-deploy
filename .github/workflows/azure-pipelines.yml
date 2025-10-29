@@ -97,8 +97,16 @@ jobs:
         working-directory: ${{ env.PROJECT_PATH }}
         run: |
          echo "📍 Current location: $(pwd)"
-         ls -R
-         zip -r appServiceSlot.zip publish
+         ls -R bin/Release/net8.0/
+         zip -r ../appServiceSlot.zip bin/Release/net8.0/publish
+         ls -lh ../appServiceSlot.zip
+
+      # - name: Create ZIP package
+      #   working-directory: ${{ env.PROJECT_PATH }}
+      #   run: |
+      #    echo "📍 Current location: $(pwd)"
+      #    ls -R
+      #    zip -r appServiceSlot.zip publish
 
       # - name: Create ZIP package
       #   working-directory: ${{ env.PROJECT_PATH1 }}
@@ -114,12 +122,20 @@ jobs:
       #     zip -r ../appServiceSlot.zip
       #     cd ..
 
-      - name: Deploy ZIP to Slot
+      # - name: Deploy ZIP to Slot
+      #   uses: azure/webapps-deploy@v3
+      #   with:
+      #     app-name: ${{ env.WEBAPP_NAME }}
+      #     slot-name: ${{ env.WEBAPP_SLOT }}
+      #     package: appServiceSlot.zip
+      - name: Deploy to Azure App Service Slot
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ env.WEBAPP_NAME }}
-          slot-name: ${{ env.WEBAPP_SLOT }}
-          package: appServiceSlot.zip
+        app-name: ${{ env.WEBAPP_NAME }}
+        slot-name: ${{ env.WEBAPP_SLOT }}
+        resource-group-name: ${{ env.WEBAPP_RG }}
+        package: appServiceSlot.zip
+
 
       - name: Smoke Test
         run: |
