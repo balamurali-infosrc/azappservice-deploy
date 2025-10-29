@@ -10,7 +10,7 @@ permissions:
 
 env:
   TF_WORKING_DIR: ./terraform
-  DOTNET_VERSION: "8.0.6"
+  DOTNET_VERSION: "8.0.x"
   PROJECT_PATH: terraform/appServiceSlot/appServiceSlot/appServiceSlot/SlotDemo
   PROJECT_FILE: SlotDemo.csproj
 jobs:
@@ -68,7 +68,8 @@ jobs:
       #     echo "WEBAPP_NAME=$(terraform output -raw webapp_name | tr -d '\r\n')" >> $GITHUB_ENV
       #     echo "WEBAPP_SLOT=$(terraform output -raw slot_name | tr -d '\r\n')" >> $GITHUB_ENV
       #     echo "WEBAPP_RG=$(terraform output -raw resource_group_name | tr -d '\r\n')" >> $GITHUB_ENV
-
+      - name: Check installed .NET Versions
+        run: dotnet --list-sdks
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
