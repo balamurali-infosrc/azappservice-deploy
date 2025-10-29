@@ -129,11 +129,12 @@ jobs:
       #     slot-name: ${{ env.WEBAPP_SLOT }}
       #     package: appServiceSlot.zip
 
-      - name: Publish the .NET App
-        run: |
-         dotnet publish ${{ env.PROJECT_FILE }} -c Release -o bin/Release/net8.0/publish
+      - name: Publish .NET App
+        working-directory: ${{ env.PROJECT_PATH }}
+        run: dotnet publish ${{ env.PROJECT_FILE }} -c Release -o bin/Release/net8.0/publish
 
-      - name: Create ZIP package
+      - name: Zip Published Output
+        working-directory: ${{ env.PROJECT_PATH }}
         run: |
          cd bin/Release/net8.0
          zip -r appServiceSlot.zip publish
