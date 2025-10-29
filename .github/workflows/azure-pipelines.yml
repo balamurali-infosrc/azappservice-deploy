@@ -215,9 +215,17 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
           echo "Extracting terraform outputs..."
-          echo "WEBAPP_NAME=$(terraform output -raw webapp_name)" >> $GITHUB_ENV
-          echo "WEBAPP_SLOT=$(terraform output -raw slot_name)" >> $GITHUB_ENV
-          echo "WEBAPP_RG=$(terraform output -raw resource_group_name)" >> $GITHUB_ENV
+          webapp_name=$(terraform output -raw webapp_name | tr -d '\r\n')
+          slot_name=$(terraform output -raw slot_name | tr -d '\r\n')
+          resource_group_name=$(terraform output -raw resource_group_name | tr -d '\r\n')
+
+          echo "WEBAPP_NAME=$webapp_name" >> $GITHUB_ENV
+          echo "WEBAPP_SLOT=$slot_name" >> $GITHUB_ENV
+          echo "WEBAPP_RG=$resource_group_name" >> $GITHUB_ENV
+
+          echo "WEBAPP_NAME: $webapp_name"
+          echo "WEBAPP_SLOT: $slot_name"
+          echo "WEBAPP_RG: $resource_group_name"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
