@@ -11,8 +11,7 @@ permissions:
 env:
   TF_WORKING_DIR: ./terraform
   DOTNET_VERSION: "8.0.x"
-  PROJECT_PATH: .
-
+  PROJECT_PATH: terraform/appServiceSlot/SlotDemo/SlotDemo.csproj
 jobs:
   terraform-deploy:
     runs-on: ubuntu-latest
