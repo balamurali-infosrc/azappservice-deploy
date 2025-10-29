@@ -48,16 +48,16 @@ jobs:
         run: |
          echo "Fetching Terraform outputs..."
     
-         WEBAPP_NAME=$(terraform output -raw webapp_name | tr -d '\r\n')
-         WEBAPP_SLOT=$(terraform output -raw slot_name | tr -d '\r\n')
-         WEBAPP_RG=$(terraform output -raw resource_group_name | tr -d '\r\n')
+         webapp_name=$(terraform output -raw webapp_name | tr -d '\r\n')
+         slot_name=$(terraform output -raw slot_name | tr -d '\r\n')
+         resource_group_name=$(terraform output -raw resource_group_name | tr -d '\r\n')
 
-         echo "WEBAPP_NAME=$webapp_name" >> $GITHUB_ENV
+         echo "webapp_name=$webapp_name" >> $GITHUB_ENV
          echo "WEBAPP_SLOT=$slot_name" >> $GITHUB_ENV
-         echo "WEBAPP_RG=$resource_group_name" >> $GITHUB_ENV
+         echo "resource_group_nam=$resource_group_name" >> $GITHUB_ENV
 
-         echo "Web App Name: $webapp_name"
-         echo "Slot Name: $slot_name"
+         echo "webapp_name: $webapp_name"
+         echo "slot_name: $slot_name"
          echo "resource_group_name: $resource_group_name"
 
       # - name: Get Terraform Outputs
