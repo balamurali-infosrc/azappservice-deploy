@@ -12,6 +12,7 @@ env:
   TF_WORKING_DIR: ./terraform
   DOTNET_VERSION: "8.0.x"
   PROJECT_PATH: terraform/appServiceSlot/SlotDemo
+  PROJECT_PATH1: terraform/appServiceSlot/appServiceSlot/SlotDemo
   PROJECT_FILE: SlotDemo.csproj
 jobs:
   terraform-deploy:
@@ -93,11 +94,18 @@ jobs:
          dotnet publish "$PROJECT_FILE" -c Release -o ../../publish
 
       - name: Create ZIP package
-        working-directory: ${{ env.PROJECT_PATH }}
+        working-directory: ${{ env.PROJECT_PATH1 }}
         run: |
-         cd publish
-         zip -r ../appServiceSlot.zip .
-         cd ..
+         echo "📍 Current location: $(pwd)"
+         ls -R
+         zip -r appServiceSlot.zip publish
+
+      # - name: Create ZIP package
+      #   working-directory: ${{ env.PROJECT_PATH1 }}
+      #   run: |
+      #    cd publish
+      #    zip -r ../appServiceSlot.zip
+      #    cd ..
 
 
       # - name: Zip output
