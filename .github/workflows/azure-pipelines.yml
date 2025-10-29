@@ -93,18 +93,18 @@ jobs:
       - name: Deploy ZIP to Slot
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ env."webapp_name }}
-          slot-name: ${{ env.slot_name }}
+          app-name: ${{ env."WEBAPP_NAME }}
+          slot-name: ${{ env.WEBAPP_SLOT }}
           package: appServiceSlot.zip
 
       - name: Smoke Test
         run: |
-          curl -fS https://${{ env.webapp_name }}-${{ env.slot_name }}.azurewebsites.net || exit 1
+          curl -fS https://${{ env.WEBAPP_NAME }}-${{ env.WEBAPP_SLOT }}.azurewebsites.net || exit 1
 
       - name: Swap Slots
         run: |
           az webapp deployment slot swap \
           --resource-group ${{ env.resource_group_name }} \
-          --name ${{ env.webapp_name }} \
-          --slot ${{ env.slot_name }} \
+          --name ${{ env.WEBAPP_NAME }} \
+          --slot ${{ env.WEBAPP_SLOT }} \
           --target-slot production
