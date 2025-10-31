@@ -43,23 +43,24 @@ jobs:
       - name: Terraform Apply
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform apply -auto-approve
-      - name: ✅ Extract Terraform Outputs (Clean)
-        working-directory: ${{ env.TF_WORKING_DIR }}
-        run: |
-          echo "Extracting terraform outputs..."
 
-          WEBAPP_NAME=$(terraform output -raw webapp_name 2>/dev/null | xargs)
-          WEBAPP_SLOT=$(terraform output -raw slot_name 2>/dev/null | xargs)
-          WEBAPP_RG=$(terraform output -raw resource_group_name 2>/dev/null | xargs)
+      # - name: ✅ Extract Terraform Outputs (Clean)
+      #   working-directory: ${{ env.TF_WORKING_DIR }}
+      #   run: |
+      #     echo "Extracting terraform outputs..."
 
-          echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
-          echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
-          echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
+      #     WEBAPP_NAME=$(terraform output -raw webapp_name 2>/dev/null | xargs)
+      #     WEBAPP_SLOT=$(terraform output -raw slot_name 2>/dev/null | xargs)
+      #     WEBAPP_RG=$(terraform output -raw resource_group_name 2>/dev/null | xargs)
 
-          echo "✅ Clean Outputs:"
-          echo "WEBAPP_NAME: $WEBAPP_NAME"
-          echo "WEBAPP_SLOT: $WEBAPP_SLOT"
-          echo "WEBAPP_RG: $WEBAPP_RG"
+      #     echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
+      #     echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
+      #     echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
+
+      #     echo "✅ Clean Outputs:"
+      #     echo "WEBAPP_NAME: $WEBAPP_NAME"
+      #     echo "WEBAPP_SLOT: $WEBAPP_SLOT"
+      #     echo "WEBAPP_RG: $WEBAPP_RG"
 
       # - name: Get Terraform Outputs
       #   id: tf-output
@@ -163,7 +164,7 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.WEBAPP_NAME }}
-          # slot-name: ${{ env.WEBAPP_SLOT }}
+          slot-name: ${{ env.WEBAPP_SLOT }}
           # resource-group-name: ${{ env.WEBAPP_RG }}
           package: appServiceSlot.zip
 
