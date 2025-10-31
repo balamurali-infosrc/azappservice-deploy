@@ -44,6 +44,13 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform apply -auto-approve
 
+      - name: ✅ Debug Deployment Values
+        run: |
+          echo "WEBAPP_NAME = ${{ env.WEBAPP_NAME }}"
+          echo "WEBAPP_SLOT = ${{ env.WEBAPP_SLOT }}"
+          echo "WEBAPP_RG = ${{ env.WEBAPP_RG }}"
+
+
       # - name: ✅ Extract Terraform Outputs (Clean)
       #   working-directory: ${{ env.TF_WORKING_DIR }}
       #   run: |
