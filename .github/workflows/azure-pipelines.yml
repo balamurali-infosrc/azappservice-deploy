@@ -43,24 +43,41 @@ jobs:
       - name: Terraform Apply
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform apply -auto-approve
-
-      - name: Get Terraform Outputs
-        id: tf-output
+      - name: ✅ Extract Terraform Outputs (Clean)
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-         echo "Fetching Terraform outputs..."
+          echo "Extracting terraform outputs..."
+
+          WEBAPP_NAME=$(terraform output -raw webapp_name 2>/dev/null | xargs)
+          WEBAPP_SLOT=$(terraform output -raw slot_name 2>/dev/null | xargs)
+          WEBAPP_RG=$(terraform output -raw resource_group_name 2>/dev/null | xargs)
+
+          echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
+          echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
+          echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
+
+          echo "✅ Clean Outputs:"
+          echo "WEBAPP_NAME: $WEBAPP_NAME"
+          echo "WEBAPP_SLOT: $WEBAPP_SLOT"
+          echo "WEBAPP_RG: $WEBAPP_RG"
+
+      # - name: Get Terraform Outputs
+      #   id: tf-output
+      #   working-directory: ${{ env.TF_WORKING_DIR }}
+      #   run: |
+      #    echo "Fetching Terraform outputs..."
     
-         webapp_name=$(terraform output -raw webapp_name | tr -d '\r\n')
-         slot_name=$(terraform output -raw slot_name | tr -d '\r\n')
-         resource_group_name=$(terraform output -raw resource_group_name | tr -d '\r\n')
+      #    webapp_name=$(terraform output -raw webapp_name | tr -d '\r\n')
+      #    slot_name=$(terraform output -raw slot_name | tr -d '\r\n')
+      #    resource_group_name=$(terraform output -raw resource_group_name | tr -d '\r\n')
 
-         echo "WEBAPP_NAME=$webapp_name" >> $GITHUB_ENV
-         echo "WEBAPP_SLOT=$slot_name" >> $GITHUB_ENV
-         echo "WEBAPP_RG=$resource_group_name" >> $GITHUB_ENV
+      #    echo "WEBAPP_NAME=$webapp_name" >> $GITHUB_ENV
+      #    echo "WEBAPP_SLOT=$slot_name" >> $GITHUB_ENV
+      #    echo "WEBAPP_RG=$resource_group_name" >> $GITHUB_ENV
 
-         echo "WEBAPP_NAME: $webapp_name"
-         echo "WEBAPP_SLOT: $slot_name"
-         echo "WEBAPP_RG: $resource_group_name"
+      #    echo "WEBAPP_NAME: $webapp_name"
+      #    echo "WEBAPP_SLOT: $slot_name"
+      #    echo "WEBAPP_RG: $resource_group_name"
 
       # - name: Get Terraform Outputs
       #   id: tf-output
