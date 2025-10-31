@@ -63,11 +63,11 @@ jobs:
 
 
       
-      - name: ✅ Debug Deployment Values
-        run: |
-          echo "WEBAPP_NAME = ${{ env.WEBAPP_NAME }}"
-          echo "WEBAPP_SLOT = ${{ env.WEBAPP_SLOT }}"
-          echo "WEBAPP_RG = ${{ env.WEBAPP_RG }}"
+      # - name: ✅ Debug Deployment Values
+      #   run: |
+      #     echo "WEBAPP_NAME = ${{ env.WEBAPP_NAME }}"
+      #     echo "WEBAPP_SLOT = ${{ env.WEBAPP_SLOT }}"
+      #     echo "WEBAPP_RG = ${{ env.WEBAPP_RG }}"
 
 
       # - name: ✅ Extract Terraform Outputs (Clean)
