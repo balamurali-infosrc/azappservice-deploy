@@ -163,7 +163,7 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.WEBAPP_NAME }}
-          slot-name: ${{ env.WEBAPP_SLOT }}
+          # slot-name: ${{ env.WEBAPP_SLOT }}
           # resource-group-name: ${{ env.WEBAPP_RG }}
           package: appServiceSlot.zip
 
