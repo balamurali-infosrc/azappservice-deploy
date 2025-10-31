@@ -38,7 +38,7 @@ resource "azurerm_linux_web_app" "webapp" {
 resource "azurerm_linux_web_app_slot" "staging" {
   name           = var.slot_name
   app_service_id = azurerm_linux_web_app.webapp.id
-  service_plan_id     = azurerm_service_plan.plan.id
+  
 
   site_config {
     application_stack {
