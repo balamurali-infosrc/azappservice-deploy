@@ -156,6 +156,7 @@ jobs:
          cd bin/Release/net8.0
          zip -r appServiceSlot.zip publish
          mv appServiceSlot.zip ${{ github.workspace }}/
+         
 
 
       - name: Deploy to Azure App Service Slot
