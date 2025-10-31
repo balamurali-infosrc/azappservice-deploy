@@ -14,7 +14,7 @@ env:
   PROJECT_PATH: terraform/appServiceSlot/SlotDemo
   # PROJECT_PATH1: terraform/appServiceSlot/appServiceSlot/SlotDemo
   PROJECT_FILE: SlotDemo.csproj
-  TF_IN_AUTOMATION: "true"
+  
 jobs:
   terraform-deploy:
     runs-on: ubuntu-latest
