@@ -41,23 +41,28 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform init
 
-      - name: Extract Terraform Outputs (JSON parsing)
-        id: tf-outputs
-        working-directory: ./terraform
+      - name: Terraform Plan
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform apply -auto-approve tfplan
+
+      - name: Extract Terraform Outputs
+        id: tf-output
+        working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          JSON=$(terraform output -json)
+          echo "WEBAPP_NAME=$(terraform output -raw webapp_name)" >> $GITHUB_ENV
+          echo "WEBAPP_SLOT=$(terraform output -raw slot_name)" >> $GITHUB_ENV
+          echo "WEBAPP_RG=$(terraform output -raw resource_group_name)" >> $GITHUB_ENV
 
-          WEBAPP_NAME=$(echo $JSON | jq -r '.webapp_name.value')
-          WEBAPP_SLOT=$(echo $JSON | jq -r '.slot_name.value')
-          WEBAPP_RG=$(echo $JSON | jq -r '.resource_group_name.value')
+      - name: Debug Outputs ✅
+        run: |
+          echo "WEBAPP_NAME=${{ env.WEBAPP_NAME }}"
+          echo "WEBAPP_SLOT=${{ env.WEBAPP_SLOT }}"
+          echo "WEBAPP_RG=${{ env.WEBAPP_RG }}"
 
-          echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
-          echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
-          echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
-
-          echo "✅ Webapp Name: $WEBAPP_NAME"
-          echo "✅ Slot Name: $WEBAPP_SLOT"
-          echo "✅ Resource Group: $WEBAPP_RG"
       
       # - name: ✅ Debug Deployment Values
       #   run: |
@@ -187,8 +192,10 @@ jobs:
         with:
           app-name: ${{ env.WEBAPP_NAME }}
           slot-name: ${{ env.WEBAPP_SLOT }}
+          package: ${{ github.workspace }}/appServiceSlot.zip
+
           # resource-group-name: ${{ env.WEBAPP_RG }}
-          package: appServiceSlot.zip
+          # package: appServiceSlot.zip
 
 
 
