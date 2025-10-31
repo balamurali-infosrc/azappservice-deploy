@@ -43,6 +43,23 @@ jobs:
       - name: Terraform Apply
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform apply -auto-approve
+        
+      - name: ✅ Extract Terraform Outputs Cleanly
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+         echo "Extracting terraform outputs..."
+
+         WEBAPP_NAME=$(terraform output -json webapp_name | jq -r .)
+         WEBAPP_SLOT=$(terraform output -json slot_name | jq -r .)
+         WEBAPP_RG=$(terraform output -json resource_group_name | jq -r .)
+
+         echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
+         echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
+         echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
+
+         echo "✅ WEBAPP_NAME: $WEBAPP_NAME"
+         echo "✅ WEBAPP_SLOT: $WEBAPP_SLOT"
+         echo "✅ WEBAPP_RG: $WEBAPP_RG"
 
       - name: ✅ Debug Deployment Values
         run: |
