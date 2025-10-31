@@ -45,25 +45,21 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform apply -auto-approve
         
-      # ✅ Step: Extract Terraform Outputs (Run AFTER terraform apply)
-      - name: Extract terraform outputs
-        working-directory: ./terraform   # ✅ Very important!
+      - name: Deploy to Azure App Service Slot
+        working-directory: ./terraform
         run: |
-         echo "Extracting terraform outputs..."
+          WEBAPP_NAME=$(terraform output -raw webapp_name | head -n 1 | tr -d '\r')
+          WEBAPP_SLOT=$(terraform output -raw slot_name | head -n 1 | tr -d '\r')
 
-         # ✅ Clean debug lines (keep only first real output line)
-         WEBAPP_NAME=$(terraform output -raw webapp_name | head -n 1 | tr -d '\r')
-         WEBAPP_SLOT=$(terraform output -raw slot_name | head -n 1 | tr -d '\r')
-         WEBAPP_RG=$(terraform output -raw resource_group_name | head -n 1 | tr -d '\r')
+          echo "Deploying to App: $WEBAPP_NAME, Slot: $WEBAPP_SLOT"
 
-         echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
-         echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
-         echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
+          az webapp deployment source config-zip \
+          --name $WEBAPP_NAME \
+          --resource-group $(terraform output -raw resource_group_name | head -n 1 | tr -d '\r') \
+          --slot $WEBAPP_SLOT \
+          --src appServiceSlot.zip
 
-         echo "✅ Clean WEBAPP_NAME: $WEBAPP_NAME"
-         echo "✅ Clean WEBAPP_SLOT: $WEBAPP_SLOT"
-         echo "✅ Clean WEBAPP_RG: $WEBAPP_RG"
-
+     
 
 
       
