@@ -44,22 +44,25 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform apply -auto-approve
         
-      - name: ✅ Extract Terraform Outputs
-        working-directory: ${{ env.TF_WORKING_DIR }}
+      - name: Extract terraform outputs
+        working-directory: ./terraform
+        env:
+        TF_IN_AUTOMATION: "true"
         run: |
-          echo "Extracting terraform outputs..."
+         echo "Extracting terraform outputs..."
 
-          WEBAPP_NAME=$(terraform output -raw webapp_name)
-          WEBAPP_SLOT=$(terraform output -raw slot_name)
-          WEBAPP_RG=$(terraform output -raw resource_group_name)
+         WEBAPP_NAME=$(terraform output -raw webapp_name | tr -d '\r')
+         WEBAPP_SLOT=$(terraform output -raw slot_name | tr -d '\r')
+         WEBAPP_RG=$(terraform output -raw resource_group_name | tr -d '\r')
 
-          echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
-          echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
-          echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
+         echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
+         echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
+         echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
 
-          echo "✅ WEBAPP_NAME: $WEBAPP_NAME"
-          echo "✅ WEBAPP_SLOT: $WEBAPP_SLOT"
-          echo "✅ WEBAPP_RG: $WEBAPP_RG"
+         echo "✅ WEBAPP_NAME: $WEBAPP_NAME"
+         echo "✅ WEBAPP_SLOT: $WEBAPP_SLOT"
+         echo "✅ WEBAPP_RG: $WEBAPP_RG"
+
 
       
       - name: ✅ Debug Deployment Values
