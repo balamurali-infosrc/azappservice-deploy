@@ -49,19 +49,24 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform apply -auto-approve tfplan
 
-      - name: Extract Terraform Outputs (Safe JSON)
+      - name: Extract Terraform Outputs (Clean JSON)
         id: tf-outputs
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          JSON=$(terraform output -json)
+          CLEAN_JSON=$(terraform output -json | sed -n '/^{/,$p')
 
-          echo "WEBAPP_NAME=$(echo $JSON | jq -r '.webapp_name.value')" >> $GITHUB_ENV
-          echo "WEBAPP_SLOT=$(echo $JSON | jq -r '.slot_name.value')" >> $GITHUB_ENV
-          echo "WEBAPP_RG=$(echo $JSON | jq -r '.resource_group_name.value')" >> $GITHUB_ENV
+          WEBAPP_NAME=$(echo "$CLEAN_JSON" | jq -r '.webapp_name.value')
+          WEBAPP_SLOT=$(echo "$CLEAN_JSON" | jq -r '.slot_name.value')
+          WEBAPP_RG=$(echo "$CLEAN_JSON" | jq -r '.resource_group_name.value')
 
-          echo "✅ WebApp Name: $WEBAPP_NAME"
-          echo "✅ Slot Name: $WEBAPP_SLOT"
-          echo "✅ Resource Group: $WEBAPP_RG"
+          echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
+          echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
+          echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
+
+          echo "✅ Final Clean Outputs:"
+          echo "WEBAPP_NAME=$WEBAPP_NAME"
+          echo "WEBAPP_SLOT=$WEBAPP_SLOT"
+          echo "WEBAPP_RG=$WEBAPP_RG"
 
 
       
@@ -191,9 +196,9 @@ jobs:
       - name: Deploy to Azure App Service Slot
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ env.WEBAPP_NAME }}
-          slot-name: ${{ env.WEBAPP_SLOT }}
-          package: ${{ github.workspace }}/appServiceSlot.zip
+        app-name: ${{ env.WEBAPP_NAME }}
+        slot-name: ${{ env.WEBAPP_SLOT }}
+        package: ${{ github.workspace }}/appServiceSlot.zip
 
           # resource-group-name: ${{ env.WEBAPP_RG }}
           # package: appServiceSlot.zip
