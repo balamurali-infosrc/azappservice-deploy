@@ -55,9 +55,9 @@ jobs:
          echo "WEBAPP_SLOT=$(echo $JSON | jq -r '.slot_name.value')" >> $GITHUB_ENV
          echo "WEBAPP_RG=$(echo $JSON | jq -r '.resource_group_name.value')" >> $GITHUB_ENV
 
-        echo "✅ WebApp Name: $WEBAPP_NAME"
-        echo "✅ Slot Name: $WEBAPP_SLOT"
-        echo "✅ Resource Group: $WEBAPP_RG"
+         echo "✅ WebApp Name: $WEBAPP_NAME"
+         echo "✅ Slot Name: $WEBAPP_SLOT"
+         echo "✅ Resource Group: $WEBAPP_RG"
 
 
 
