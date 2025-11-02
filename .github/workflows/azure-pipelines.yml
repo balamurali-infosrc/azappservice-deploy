@@ -77,9 +77,9 @@ jobs:
       
       - name: Debug exported variables
         run: |
-        echo "WEBAPP_NAME: $WEBAPP_NAME"
-        echo "WEBAPP_SLOT: $WEBAPP_SLOT"
-        echo "WEBAPP_RG: $WEBAPP_RG"
+          echo "WEBAPP_NAME: $WEBAPP_NAME"
+          echo "WEBAPP_SLOT: $WEBAPP_SLOT"
+          echo "WEBAPP_RG: $WEBAPP_RG"
 
       # - name: ✅ Extract Terraform Outputs (Clean)
       #   working-directory: ${{ env.TF_WORKING_DIR }}
