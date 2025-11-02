@@ -49,6 +49,20 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform apply -auto-approve tfplan
 
+      - name: Extract Terraform Outputs
+        id: tf-outputs
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+         echo "WEBAPP_NAME=$(terraform output -raw webapp_name)" >> $GITHUB_ENV
+         echo "WEBAPP_SLOT=$(terraform output -raw slot_name)" >> $GITHUB_ENV
+         echo "WEBAPP_RG=$(terraform output -raw resource_group_name)" >> $GITHUB_ENV
+
+         echo "✅ Terraform Outputs:"
+         echo "WEBAPP_NAME=$(terraform output -raw webapp_name)"
+         echo "WEBAPP_SLOT=$(terraform output -raw slot_name)"
+         echo "WEBAPP_RG=$(terraform output -raw resource_group_name)"
+
+
         #  JSON=$(terraform output -json)
 
         #  echo "WEBAPP_NAME=$(echo $JSON | jq -r '.webapp_name.value')" >> $GITHUB_ENV
@@ -61,12 +75,11 @@ jobs:
 
 
       
-      - name: ✅ Debug Deployment Values
+      - name: Debug exported variables
         run: |
-          echo "WEBAPP_NAME = ${{ env.webapp_name }}"
-          echo "WEBAPP_SLOT = ${{ env.slot_name }}"
-          echo "WEBAPP_RG = ${{ env.resource_group_name }}"
-
+        echo "WEBAPP_NAME: $WEBAPP_NAME"
+        echo "WEBAPP_SLOT: $WEBAPP_SLOT"
+        echo "WEBAPP_RG: $WEBAPP_RG"
 
       # - name: ✅ Extract Terraform Outputs (Clean)
       #   working-directory: ${{ env.TF_WORKING_DIR }}
