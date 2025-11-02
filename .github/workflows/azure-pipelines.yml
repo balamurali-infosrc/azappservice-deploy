@@ -48,20 +48,22 @@ jobs:
       - name: Terraform Apply
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform apply -auto-approve tfplan
-
+        
       - name: Extract Terraform Outputs
-        id: tf-output
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-          echo "WEBAPP_NAME=$(terraform output -raw webapp_name)" >> $GITHUB_ENV
-          echo "WEBAPP_SLOT=$(terraform output -raw slot_name)" >> $GITHUB_ENV
-          echo "WEBAPP_RG=$(terraform output -raw resource_group_name)" >> $GITHUB_ENV
+          WEBAPP_NAME=$(terraform output -raw webapp_name 2>/dev/null | tr -d '\n\r')
+          WEBAPP_SLOT=$(terraform output -raw slot_name 2>/dev/null | tr -d '\n\r')
+          WEBAPP_RG=$(terraform output -raw resource_group_name 2>/dev/null | tr -d '\n\r')
 
-      - name: Debug Outputs ✅
-        run: |
-          echo "WEBAPP_NAME=${{ env.WEBAPP_NAME }}"
-          echo "WEBAPP_SLOT=${{ env.WEBAPP_SLOT }}"
-          echo "WEBAPP_RG=${{ env.WEBAPP_RG }}"
+          echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
+          echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
+          echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
+
+          echo "✅ WebApp Name: $WEBAPP_NAME"
+          echo "✅ Slot Name: $WEBAPP_SLOT"
+          echo "✅ Resource Group: $WEBAPP_RG"
+
 
       
       # - name: ✅ Debug Deployment Values
