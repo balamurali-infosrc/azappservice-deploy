@@ -24,6 +24,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Disable GitHub Action command wrapping for Terraform ✅
+        run: echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
@@ -37,8 +40,7 @@ jobs:
            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
            auth-type: service_principal
-      - name: Disable GitHub Action command wrapping for Terraform ✅
-        run: echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
+      
 
       - name: Terraform Init
         working-directory: ${{ env.TF_WORKING_DIR }}
@@ -68,13 +70,12 @@ jobs:
       #    export TF_LOG=OFF
       #    export CHECKPOINT_DISABLE=1
 
-      - name: Extract Terraform Outputs ✅ (CLEAN)
+      - name: Extract Terraform Outputs ✅
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-
-         WEBAPP_NAME=$(terraform output -raw webapp_name | tr -d '\r')
-         WEBAPP_SLOT=$(terraform output -raw slot_name | tr -d '\r')
-         WEBAPP_RG=$(terraform output -raw resource_group_name | tr -d '\r')
+         WEBAPP_NAME=$(command terraform output -raw webapp_name)
+         WEBAPP_SLOT=$(command terraform output -raw slot_name)
+         WEBAPP_RG=$(command terraform output -raw resource_group_name)
 
          echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
          echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
