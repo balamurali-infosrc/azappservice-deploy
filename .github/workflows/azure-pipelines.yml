@@ -88,24 +88,25 @@ jobs:
       #    export TF_LOG=OFF
       #    export CHECKPOINT_DISABLE=1
 
-      - name: Extract Terraform Outputs (Clean)
+      - name: Extract clean Terraform outputs
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-         echo "🔍 Checking Terraform output status..."
+         echo "🔍 Checking Terraform outputs..."
          terraform output || true
+    
+         # Strip wrapper prefix safely
+         WEBAPP_NAME=$(terraform output -raw webapp_name | cut -d']' -f2 | sed 's/^ //')
+         WEBAPP_SLOT=$(terraform output -raw slot_name | cut -d']' -f2 | sed 's/^ //')
+         WEBAPP_RG=$(terraform output -raw resource_group_name | cut -d']' -f2 | sed 's/^ //')
 
-          WEBAPP_NAME=$(terraform output -raw webapp_name | sed 's/::debug::.*//' | tr -d '\n')
-          WEBAPP_SLOT=$(terraform output -raw slot_name | sed 's/::debug::.*//' | tr -d '\n')
-          WEBAPP_RG=$(terraform output -raw resource_group_name | sed 's/::debug::.*//' | tr -d '\n')
+         echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
+         echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
+         echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
 
-          echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
-          echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
-          echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
-
-          echo "✅ Final Clean Output:"
-          echo "WEBAPP_NAME: $WEBAPP_NAME"
-          echo "WEBAPP_SLOT: $WEBAPP_SLOT"
-          echo "WEBAPP_RG: $WEBAPP_RG"
+         echo "✅ Final Clean Output:"
+         echo "WEBAPP_NAME: $WEBAPP_NAME"
+         echo "WEBAPP_SLOT: $WEBAPP_SLOT"
+         echo "WEBAPP_RG: $WEBAPP_RG"
 
 
 
