@@ -25,16 +25,21 @@ jobs:
 
       # - name: Disable GitHub Action command wrapping for Terraform ✅
       #   run: echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
+      - name: Disable GitHub Terraform Wrapper ✅
+        run: |
+         echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
+         sudo rm -f /usr/local/bin/terraform
+         sudo ln -s /opt/hostedtoolcache/terraform/*/x64/terraform /usr/local/bin/terraform
+         which terraform
+         terraform -version
+
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: "1.8.5"
 
-      - name: Force real Terraform binary ✅
-        run: |
-         which terraform
-         ln -sf $(which terraform) /usr/local/bin/terraform
+     
 
 
       - name: Azure Login
