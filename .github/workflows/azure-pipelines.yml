@@ -14,6 +14,7 @@ env:
   PROJECT_PATH: terraform/appServiceSlot/SlotDemo
   # PROJECT_PATH1: terraform/appServiceSlot/appServiceSlot/SlotDemo
   PROJECT_FILE: SlotDemo.csproj
+  DISABLE_GITHUB_COMMAND_WRAPPING: true
 
 jobs:
   terraform-deploy:
@@ -66,19 +67,22 @@ jobs:
       #    export TF_LOG=OFF
       #    export CHECKPOINT_DISABLE=1
 
-      - name: Extract Terraform Outputs ✅
+      - name: Extract Terraform Outputs ✅ (CLEAN)
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-         WEBAPP_NAME=$(terraform output -raw webapp_name)
-         WEBAPP_SLOT=$(terraform output -raw slot_name)
-         WEBAPP_RG=$(terraform output -raw resource_group_name)
+         export DISABLE_GITHUB_COMMAND_WRAPPING=true
+    
+         WEBAPP_NAME=$(terraform output -raw webapp_name | tr -d '\r')
+         WEBAPP_SLOT=$(terraform output -raw slot_name | tr -d '\r')
+         WEBAPP_RG=$(terraform output -raw resource_group_name | tr -d '\r')
 
          echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
          echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
          echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
 
-         echo "✅ Final Output"
+         echo "✅ Final Output:"
          echo "$WEBAPP_NAME / $WEBAPP_SLOT / $WEBAPP_RG"
+
 
 
 
