@@ -56,42 +56,45 @@ jobs:
       #    ls -l
       #    cat tf_outputs.json
 
-      - name: ✅ Clean Terraform environment
-        run: |
-         unset GITHUB_ENV
-         export TF_IN_AUTOMATION=false
-         export TF_LOG=OFF
-         export CHECKPOINT_DISABLE=1
+      # - name: ✅ Clean Terraform environment
+      #   run: |
+      #    unset GITHUB_ENV
+      #    export TF_IN_AUTOMATION=false
+      #    export TF_LOG=OFF
+      #    export CHECKPOINT_DISABLE=1
 
-      - name: ✅ Extract Clean Terraform Outputs
+      - name: ✅ Fix Terraform JSON and Extract Outputs
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-         # Capture raw terraform output without GH debug trash
          RAW_JSON=$(command terraform output -json)
-
-         # Strip everything before first '{'
          CLEAN_JSON=$(echo "$RAW_JSON" | sed -n '/{/,$p')
 
-         # Save clean JSON
+         # Fix missing commas automatically
+         CLEAN_JSON=$(echo "$CLEAN_JSON" | sed 's/}\s*{/}, {/g')
+
+         # Ensure JSON ends with a closing brace
+         if ! echo "$CLEAN_JSON" | tail -n 1 | grep -q '}'; then
+         echo "⚠️ Missing closing brace — adding one..."
+         CLEAN_JSON="${CLEAN_JSON}\n}"
+         fi
+
          echo "$CLEAN_JSON" > tf_clean.json
 
          echo "📄 Clean JSON Preview:"
-         head -n 20 tf_clean.json
+         cat tf_clean.json
 
-         # Ensure valid JSON
-         jq empty tf_clean.json || (echo "❌ Still invalid JSON"; exit 1)
+         jq empty tf_clean.json || (echo "❌ JSON still invalid"; exit 1)
 
-         # Extract values
-         WEBAPP_NAME=$(jq -r '.webapp_name.value' tf_clean.json)
-         WEBAPP_SLOT=$(jq -r '.slot_name.value' tf_clean.json)
-         WEBAPP_RG=$(jq -r '.resource_group_name.value' tf_clean.json)
+         # Extract values safely (default empty if missing)
+         WEBAPP_NAME=$(jq -r '.webapp_name.value // empty' tf_clean.json)
+         WEBAPP_SLOT=$(jq -r '.slot_name.value // empty' tf_clean.json)
+         WEBAPP_RG=$(jq -r '.resource_group_name.value // empty' tf_clean.json)
 
-         # Export to pipeline environment
          echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
          echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
          echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
 
-         echo "✅ Extracted values:"
+         echo "✅ Extracted:"
          echo "WEBAPP_NAME=$WEBAPP_NAME"
          echo "WEBAPP_SLOT=$WEBAPP_SLOT"
          echo "WEBAPP_RG=$WEBAPP_RG"
