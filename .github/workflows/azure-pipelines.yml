@@ -53,6 +53,7 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
          terraform output -json > tf_outputs.json
+         ls -l
          cat tf_outputs.json
 
 
