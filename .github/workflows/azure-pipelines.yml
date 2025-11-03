@@ -37,6 +37,8 @@ jobs:
            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
            auth-type: service_principal
+      - name: Disable GitHub Action command wrapping for Terraform ✅
+        run: echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
 
       - name: Terraform Init
         working-directory: ${{ env.TF_WORKING_DIR }}
@@ -45,8 +47,7 @@ jobs:
       # - name: Terraform Plan
       #   working-directory: ${{ env.TF_WORKING_DIR }}
       #   run: terraform plan -out=tfplan
-      - name: Disable GitHub Action command wrapping for Terraform ✅
-        run: echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
+      
 
 
       - name: Terraform Apply
@@ -70,8 +71,7 @@ jobs:
       - name: Extract Terraform Outputs ✅ (CLEAN)
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-         export DISABLE_GITHUB_COMMAND_WRAPPING=true
-    
+
          WEBAPP_NAME=$(terraform output -raw webapp_name | tr -d '\r')
          WEBAPP_SLOT=$(terraform output -raw slot_name | tr -d '\r')
          WEBAPP_RG=$(terraform output -raw resource_group_name | tr -d '\r')
