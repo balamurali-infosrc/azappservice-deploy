@@ -44,6 +44,9 @@ jobs:
       # - name: Terraform Plan
       #   working-directory: ${{ env.TF_WORKING_DIR }}
       #   run: terraform plan -out=tfplan
+      - name: Disable GitHub Action command wrapping for Terraform ✅
+        run: echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
+
 
       - name: Terraform Apply
         working-directory: ${{ env.TF_WORKING_DIR }}
@@ -63,19 +66,19 @@ jobs:
       #    export TF_LOG=OFF
       #    export CHECKPOINT_DISABLE=1
 
-      - name: Disable GitHub Command Wrapping
-        run: |
-         echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
-
-      - name: Extract Terraform Outputs (Best Method ✅)
+      - name: Extract Terraform Outputs ✅
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-         echo "WEBAPP_NAME=$(terraform output -raw webapp_name)" >> $GITHUB_ENV
-         echo "WEBAPP_SLOT=$(terraform output -raw slot_name)" >> $GITHUB_ENV
-         echo "WEBAPP_RG=$(terraform output -raw resource_group_name)" >> $GITHUB_ENV
+         WEBAPP_NAME=$(terraform output -raw webapp_name)
+         WEBAPP_SLOT=$(terraform output -raw slot_name)
+         WEBAPP_RG=$(terraform output -raw resource_group_name)
+
+         echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
+         echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
+         echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
 
          echo "✅ Final Output"
-         echo "${WEBAPP_NAME:-N/A} / ${WEBAPP_SLOT:-N/A} / ${WEBAPP_RG:-N/A}"
+         echo "$WEBAPP_NAME / $WEBAPP_SLOT / $WEBAPP_RG"
 
 
 
