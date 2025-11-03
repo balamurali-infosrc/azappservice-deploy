@@ -23,8 +23,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Disable GitHub Action command wrapping for Terraform ✅
-        run: echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
+      # - name: Disable GitHub Action command wrapping for Terraform ✅
+      #   run: echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -39,7 +39,9 @@ jobs:
            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
            auth-type: service_principal
-      
+      - name: Disable GitHub Terraform Debug Wrapping ✅
+        run: |
+         echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
 
       - name: Terraform Init
         working-directory: ${{ env.TF_WORKING_DIR }}
