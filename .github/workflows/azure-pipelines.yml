@@ -63,6 +63,11 @@ jobs:
       #    export TF_LOG=OFF
       #    export CHECKPOINT_DISABLE=1
 
+      - name: Disable GitHub Command Wrapping
+        run: |
+         echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
+
+
       - name: ✅ Extract Terraform Outputs Properly
         id: tfout
         working-directory: ${{ env.TF_WORKING_DIR }}
