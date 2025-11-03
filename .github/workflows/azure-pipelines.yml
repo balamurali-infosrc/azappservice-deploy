@@ -108,7 +108,7 @@ jobs:
          echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
          echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
 
-         echo "✅ Final Clean Output:"
+         echo "Final Clean Output:"
          echo "App: $WEBAPP_NAME"
          echo "Slot: $WEBAPP_SLOT"
          echo "RG: $WEBAPP_RG"
