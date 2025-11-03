@@ -57,37 +57,42 @@ jobs:
       #    cat tf_outputs.json
 
 
-      - name: Extract Clean Terraform Outputs ✅ Final Fix
+      - name: Extract Clean Terraform Outputs ✅ Final
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-         echo "🧹 Cleaning Terraform JSON output..."
+         echo "🧹 Cleaning Terraform output..."
 
          terraform output -json > tf_raw.json || exit 1
 
-         # Strip everything before the first '{' and after the last '}'
-         sed '1,/{/ s/.*{/{/' tf_raw.json | sed 's/}[^}]*$/}/' > tf_clean.json
+         # Extract ONLY valid JSON content (first { to last })
+         awk '
+         /{/ {start=1}
+         start {print}
+         /}/ {end=NR}
+         ' tf_raw.json | sed -n "1,/\}/p" > tf_clean.tmp
 
-         echo "📄 Verified Clean JSON:"
+         # Auto-fix missing commas between JSON blocks
+         sed 's/}\s*{/}, {/g' tf_clean.tmp > tf_clean.json
+
+         echo "📄 Clean JSON:"
          cat tf_clean.json
 
-         # Validate JSON before processing
-         if ! jq empty tf_clean.json 2>/dev/null; then
-         echo "❌ JSON still invalid!"
-         exit 1
-         fi
+         # Validate final JSON
+         jq empty tf_clean.json || (echo "❌ JSON still invalid"; exit 1)
 
-          WEBAPP_NAME=$(jq -r '.webapp_name.value' tf_clean.json)
-          WEBAPP_SLOT=$(jq -r '.slot_name.value' tf_clean.json)
-          WEBAPP_RG=$(jq -r '.resource_group_name.value' tf_clean.json)
+         WEBAPP_NAME=$(jq -r '.webapp_name.value' tf_clean.json)
+         WEBAPP_SLOT=$(jq -r '.slot_name.value' tf_clean.json)
+         WEBAPP_RG=$(jq -r '.resource_group_name.value' tf_clean.json)
 
-          echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
-          echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
-          echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
+         echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
+         echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
+         echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
 
-          echo "✅ Clean Outputs:"
-          echo "WEBAPP_NAME=$WEBAPP_NAME"
-          echo "WEBAPP_SLOT=$WEBAPP_SLOT"
-          echo "WEBAPP_RG=$WEBAPP_RG"
+         echo "✅ Final Extracted:"
+         echo "WEBAPP_NAME=$WEBAPP_NAME"
+         echo "WEBAPP_SLOT=$WEBAPP_SLOT"
+         echo "WEBAPP_RG=$WEBAPP_RG"
+
 
 
 
