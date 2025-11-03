@@ -25,15 +25,15 @@ jobs:
 
       # - name: Disable GitHub Action command wrapping for Terraform ✅
       #   run: echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
-      - name: Disable Terraform Wrapper ✅
-        shell: bash
-        run: |
-         echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
-         echo "GITHUB_IS_ACTION=false" >> $GITHUB_ENV
-         export GITHUB_IS_ACTION=false
-         export DISABLE_GITHUB_COMMAND_WRAPPING=true
+      # - name: Disable Terraform Wrapper ✅
+      #   shell: bash
+      #   run: |
+      #    echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
+      #    echo "GITHUB_IS_ACTION=false" >> $GITHUB_ENV
+      #    export GITHUB_IS_ACTION=false
+      #    export DISABLE_GITHUB_COMMAND_WRAPPING=true
 
-         echo "✅ Terraform wrapper disabled"
+      #    echo "✅ Terraform wrapper disabled"
 
 
 
@@ -88,26 +88,30 @@ jobs:
       #    export TF_LOG=OFF
       #    export CHECKPOINT_DISABLE=1
 
-      - name: Extract Terraform Outputs (Safe)
+      - name: Extract Terraform Outputs (Clean)
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
          echo "🔍 Checking Terraform output status..."
          terraform output || true
 
-         # Capture and clean Terraform output
-         WEBAPP_NAME=$(terraform output -raw webapp_name | tr -d '\r' | tr -d '\n')
-         WEBAPP_SLOT=$(terraform output -raw slot_name | tr -d '\r' | tr -d '\n')
-         WEBAPP_RG=$(terraform output -raw resource_group_name | tr -d '\r' | tr -d '\n')
+         # Capture output including wrapper noise
+         RAW_WEBAPP_NAME=$(terraform output -raw webapp_name 2>&1)
+         RAW_WEBAPP_SLOT=$(terraform output -raw slot_name 2>&1)
+         RAW_WEBAPP_RG=$(terraform output -raw resource_group_name 2>&1)
 
-         # ✅ Export with no newlines
+         # ✅ Strip GitHub Action wrapper paths and debug string
+         WEBAPP_NAME=$(echo "$RAW_WEBAPP_NAME" | sed -E 's/^\[command\].*output -raw webapp_name//; s/::debug::.*//; s/^ *//')
+         WEBAPP_SLOT=$(echo "$RAW_WEBAPP_SLOT" | sed -E 's/^\[command\].*output -raw slot_name//; s/::debug::.*//; s/^ *//')
+         WEBAPP_RG=$(echo "$RAW_WEBAPP_RG" | sed -E 's/^\[command\].*output -raw resource_group_name//; s/::debug::.*//; s/^ *//')
+
          echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
          echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
          echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
 
-         echo "✅ Final Clean Output:"
-         echo "App: $WEBAPP_NAME"
-         echo "Slot: $WEBAPP_SLOT"
-         echo "RG: $WEBAPP_RG"
+         echo "Final Clean Output:"
+         echo "App-name: $WEBAPP_NAME"
+         echo "slot-name: $WEBAPP_SLOT"
+         echo "resource-group-name: $WEBAPP_RG"
 
 
 
