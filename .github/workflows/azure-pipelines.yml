@@ -56,29 +56,19 @@ jobs:
       #    ls -l
       #    cat tf_outputs.json
 
+      - name: ✅ Clean Terraform environment
+        run: |
+         unset GITHUB_ENV
+         export TF_IN_AUTOMATION=false
+         export TF_LOG=OFF
+         export CHECKPOINT_DISABLE=1
 
-      - name: Extract Clean Terraform Outputs ✅ Final
+      - name: ✅ Get Clean Terraform Outputs
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-         echo "🧹 Cleaning Terraform output..."
+         JSON_OUTPUT=$(command terraform output -json)  # 👈 forces raw output bypassing GH wrapper
 
-         terraform output -json > tf_raw.json || exit 1
-
-         # Extract ONLY valid JSON content (first { to last })
-         awk '
-         /{/ {start=1}
-         start {print}
-         /}/ {end=NR}
-         ' tf_raw.json | sed -n "1,/\}/p" > tf_clean.tmp
-
-         # Auto-fix missing commas between JSON blocks
-         sed 's/}\s*{/}, {/g' tf_clean.tmp > tf_clean.json
-
-         echo "📄 Clean JSON:"
-         cat tf_clean.json
-
-         # Validate final JSON
-         jq empty tf_clean.json || (echo "❌ JSON still invalid"; exit 1)
+         echo "$JSON_OUTPUT" > tf_clean.json
 
          WEBAPP_NAME=$(jq -r '.webapp_name.value' tf_clean.json)
          WEBAPP_SLOT=$(jq -r '.slot_name.value' tf_clean.json)
