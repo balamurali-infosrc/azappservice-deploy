@@ -91,9 +91,9 @@ jobs:
       - name: Extract Terraform Outputs ✅
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-         WEBAPP_NAME=$(terraform output -raw webapp_name)
-         WEBAPP_SLOT=$(terraform output -raw slot_name)
-         WEBAPP_RG=$(terraform output -raw resource_group_name)
+         WEBAPP_NAME=$(terraform output -raw webapp_name | sed 's/::debug::.*//g' | tail -n 1)
+         WEBAPP_SLOT=$(terraform output -raw slot_name | sed 's/::debug::.*//g' | tail -n 1)
+         WEBAPP_RG=$(terraform output -raw resource_group_name | sed 's/::debug::.*//g' | tail -n 1)
 
          echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
          echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
