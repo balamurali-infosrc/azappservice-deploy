@@ -73,11 +73,10 @@ jobs:
 
       - name: Extract Terraform Outputs ✅
         working-directory: ${{ env.TF_WORKING_DIR }}
-        shell: bash
         run: |
-         WEBAPP_NAME=$(command terraform output -raw webapp_name | tr -d '\r')
-         WEBAPP_SLOT=$(command terraform output -raw slot_name | tr -d '\r')
-         WEBAPP_RG=$(command terraform output -raw resource_group_name | tr -d '\r')
+         WEBAPP_NAME=$(terraform output -raw webapp_name)
+         WEBAPP_SLOT=$(terraform output -raw slot_name)
+         WEBAPP_RG=$(terraform output -raw resource_group_name)
 
          echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
          echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
@@ -85,6 +84,7 @@ jobs:
 
          echo "✅ Final Output:"
          echo "$WEBAPP_NAME / $WEBAPP_SLOT / $WEBAPP_RG"
+
 
 
 
