@@ -30,7 +30,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: "1.8.5"
-          
+
       - name: Force real Terraform binary ✅
         run: |
          which terraform
@@ -45,9 +45,12 @@ jobs:
            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
            auth-type: service_principal
-      - name: Disable GitHub Terraform Debug Wrapping ✅
+      - name: Disable GitHub Terraform Wrapper ✅
         run: |
          echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
+         sudo ln -sf $(which terraform) /usr/local/bin/terraform
+         terraform -version
+
 
       - name: Terraform Init
         working-directory: ${{ env.TF_WORKING_DIR }}
