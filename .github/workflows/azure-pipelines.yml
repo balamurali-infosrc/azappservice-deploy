@@ -49,21 +49,28 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform apply -auto-approve tfplan
 
-      - name: Extract Terraform Outputs (Final Fix ✅)
+      - name: Save Terraform Outputs to File ✅
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
-         WEBAPP_NAME=$(terraform output -raw webapp_name | head -n 1 | tr -d '\r' | sed 's/\[[^]]*\]//g')
-         WEBAPP_SLOT=$(terraform output -raw slot_name | head -n 1 | tr -d '\r' | sed 's/\[[^]]*\]//g')
-         WEBAPP_RG=$(terraform output -raw resource_group_name | head -n 1 | tr -d '\r' | sed 's/\[[^]]*\]//g')
+         terraform output -json > tf_outputs.json
+         cat tf_outputs.json
+
+
+      - name: Extract Values from JSON ✅
+        run: |
+         WEBAPP_NAME=$(jq -r '.webapp_name.value' tf_outputs.json)
+         WEBAPP_SLOT=$(jq -r '.slot_name.value' tf_outputs.json)
+         WEBAPP_RG=$(jq -r '.resource_group_name.value' tf_outputs.json)
 
          echo "WEBAPP_NAME=$WEBAPP_NAME" >> $GITHUB_ENV
          echo "WEBAPP_SLOT=$WEBAPP_SLOT" >> $GITHUB_ENV
          echo "WEBAPP_RG=$WEBAPP_RG" >> $GITHUB_ENV
 
-         echo "✅ Clean Terraform Outputs:"
-         echo "WEBAPP_NAME: $WEBAPP_NAME"
-         echo "WEBAPP_SLOT: $WEBAPP_SLOT"
-         echo "WEBAPP_RG: $WEBAPP_RG"
+         echo "✅ Clean Outputs:"
+         echo "WEBAPP_NAME=$WEBAPP_NAME"
+         echo "WEBAPP_SLOT=$WEBAPP_SLOT"
+         echo "WEBAPP_RG=$WEBAPP_RG"
+
 
 
 
@@ -200,13 +207,20 @@ jobs:
          mv appServiceSlot.zip ${{ github.workspace }}/
          
 
-
-      - name: Deploy to Azure App Service Slot
+      - name: Deploy to Slot
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.WEBAPP_NAME }}
           slot-name: ${{ env.WEBAPP_SLOT }}
-          package: ${{ github.workspace }}/appServiceSlot.zip
+          resource-group-name: ${{ env.WEBAPP_RG }}
+          package: ./appServiceSlot.zip
+
+      # - name: Deploy to Azure App Service Slot
+      #   uses: azure/webapps-deploy@v3
+      #   with:
+      #     app-name: ${{ env.WEBAPP_NAME }}
+      #     slot-name: ${{ env.WEBAPP_SLOT }}
+      #     package: ${{ github.workspace }}/appServiceSlot.zip
 
           # resource-group-name: ${{ env.WEBAPP_RG }}
           # package: appServiceSlot.zip
