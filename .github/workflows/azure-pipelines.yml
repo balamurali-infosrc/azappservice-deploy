@@ -41,13 +41,13 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform init
 
-      - name: Terraform Plan
-        working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform plan -out=tfplan
+      # - name: Terraform Plan
+      #   working-directory: ${{ env.TF_WORKING_DIR }}
+      #   run: terraform plan -out=tfplan
 
       - name: Terraform Apply
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve
 
       # - name: Save Terraform Outputs to File ✅
       #   working-directory: ${{ env.TF_WORKING_DIR }}
