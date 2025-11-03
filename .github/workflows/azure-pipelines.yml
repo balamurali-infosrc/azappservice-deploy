@@ -25,21 +25,15 @@ jobs:
 
       # - name: Disable GitHub Action command wrapping for Terraform ✅
       #   run: echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
-      - name: Disable GitHub Terraform Wrapper ✅
+      - name: Disable Terraform Wrapper ✅
         shell: bash
         run: |
          echo "DISABLE_GITHUB_COMMAND_WRAPPING=true" >> $GITHUB_ENV
+         echo "GITHUB_IS_ACTION=false" >> $GITHUB_ENV
+         export GITHUB_IS_ACTION=false
+         export DISABLE_GITHUB_COMMAND_WRAPPING=true
 
-         # Remove wrapper if it exists
-         sudo rm -f /usr/local/bin/terraform || true
-
-         # Link real terraform to PATH
-         REAL_TF=$(ls -d /opt/hostedtoolcache/terraform/*/x64/terraform | head -n1)
-         sudo ln -sf "$REAL_TF" /usr/local/bin/terraform
-
-         echo "✅ Using Terraform binary from:"
-         which terraform
-         terraform version
+         echo "✅ Terraform wrapper disabled"
 
 
 
